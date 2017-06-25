@@ -1,9 +1,13 @@
+// INIT
+// Define global variables
+
 mode = '';
 _key = '';
+
+// Begin adding listeners once the document is finished loading
 $(document).ready(function(){
 
-
-	/*These functions make the input button behavior,
+	/*These functions define the input button behavior,
 	  Make the corresponding fields visible and rewrite the name*/
 	function addOrgMode(){
 		resetForm();
@@ -57,26 +61,39 @@ $(document).ready(function(){
 		$('#collab_fields input').prop('disabled', true);
 	};
 
-	//Update Firebase on click submission
+	/************************************************************************/
+
+
+	//Update Firebase on click submission. It might be cleaner to at one point split
+	//	'mode' into two variables, one 'entity_type' chosen from{'org', 'collab'}, one
+	//	'editing_type' chosen from {'add', 'edit', 'remove'}, since functions like this 
+	//	have such parallel structure.
 	function submitClick(){
 		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
 		switch (mode){
 			case "add_org":
+			// Push new organization directly to database
 				var newOrg = createOrganizationObject();
 				firebaseRef.child('entity').push(newOrg);
 				break;
 			case "edit_org":
+			// Update entity table based only on text field values, 
+			//	updating organization entity links depends on global var
+			//	_key being set to the org key.
 				var newOrg = createOrganizationObject();
 				firebaseRef.child('entity').child(_key).set(newOrg);
 				editOrgUpdateEntityLinks();
 				break;
 			case "rem_org":
+			// As above, remOrgUpdateEntityLinks() depends on correct global _key
 				if (confirm("Do you really want to delete this organization?")){
 					firebaseRef.child('entity').child(_key).remove();
 					remOrgUpdateEntityLinks();
 				}
 				break;
 			case "add_collab":
+			// Collaboration procedures have different internal functions, but the
+			//	structure in the scope of this function is identical.
 				var newCollab = createCollaborationObject();
 				firebaseRef.child('entity').push(newCollab);
 				break;
@@ -92,32 +109,23 @@ $(document).ready(function(){
 				}
 				break;
 			default: 
+				// This happens if the user tries to select and change an entity
+				// 	without selecting a mode first.
 				window.alert("Please select an editing mode!");
 				break;
 		};
+		// Once the submit button has been clicked, clear the form and reset Firebase
 		resetForm();
 		initializeFirebase(firebaseRef);
 	};
 
+	/*********************************************************/
+	// submitClick() helper functions
 
-	//Remove text from all input fields.
-	function clearFields(){
-		$('input:text').val('');
-		$('input:checkbox').prop('checked', false);
-		$('#org_name, #collab_name').html('');
-	};
-
-	//Hide all fields
-	function hideFields(){
-		$('#org_fields, #collab_fields').hide();
-		$('#select_org, #select_collab').hide();
-	};
-
-	function resetForm(){
-		clearFields();
-		hideFields();
-	}
-
+	// These two functions are overly long, and they rely on hardcoding in the first names.
+	// There is a better way to implement this, such as in fillOrgFields() and fillCollabFields()
+	// 	using JQuery matching. This is adequately fast, however
+	// TODO: Implement JQuery matching for these function
 	function createOrganizationObject(){
 		var newOrg = {
 			abbreviations_for_collaborations_only 				: "",
@@ -189,38 +197,81 @@ $(document).ready(function(){
 		return newCollab;
 	};
 	
+	/* These functions have a live Firebase within them to make changes.
+	   Editing and removing organization links is more difficult because of the structure of
+	   'entity-membership': 	collab-key => [member-key1, member-key2, member-key3]
 
-	//Thanks to StackExchange user Samuel Meddows
-	function currentDate(){
-		var today = new Date();
-		var dd = today.getDate();
-		var mm = today.getMonth()+1; //January is 0!
-		var yyyy = today.getFullYear();
+	*/
+	function editOrgUpdateEntityLinks(){
+		// Gets the currently selected collaborations for the organization as an array of keys.
+		memberOf = $('.chosen#org_members').val();
 
-		if(dd<10) {
-		    dd = '0'+dd
-		};
+		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		// firebaseRef.once() will only trigger and perform the internal operations once.
+		firebaseRef.child('entity-membership').once("value", function(snapshot){
+			// data is the entity membership table as a JSON object
+			data = snapshot.val();
+			// For every key that the organization should be associated with
+			for (var i = 0; i < memberOf.length; i++) {
+				// If that key is in the entity membership table and the organization is 
+				//	NOT already associated with that key, then add the org-key to the main table.
+				if (data.hasOwnProperty(memberOf[i]) && !isInArray(_key, data[memberOf[i]])){
+					data[memberOf[i]].push(_key);
+				}
+			}
+			// Update with new data.
+			firebaseRef.child('entity-membership').update(data);
+		});
+	}
 
-		if(mm<10) {
-		    mm = '0'+mm
-		};
+	function editCollabUpdateEntityLinks(){
+		// Gets the current members for this organization as an array
+		members = $('.chosen#collab_members');
+		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		// Update Firebase's ref for this collaboration key to be the member array.
+		firebaseRef.child('entity_membership').child(_key).update(members);
+	}
 
-		today = mm + '/' + dd + '/' + yyyy;
-		return today;
-	};
+	function remOrgUpdateEntityLinks(){
+		// To remove an org, we just remove its key from everywhere.
+		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		firebaseRef.child('entity-membership').once("value", function(snapshot){
+			data = snapshot.val();
+			for (var key in data){
+				// data.hasOwnProperty(key) check prevents primitive Object properties from mattering
+				if (data.hasOwnProperty(key) && isInArray(_key, data[key])){
+					// This pops the key from the array.
+					var index = data[key].indexOf(_key);
+					if (index > -1) {
+						data[key].splice(index, 1);
+					}
+				}
+			}
+			firebaseRef.child('entity-membership').update(data);
+		});
+	}
 
-	/*Top level selects for orgs and collaborations are loaded once
-		This feature is easily changed, simply add the populateOrgSelect()
-		and populateCollabSelect() functions to the appropriate mode functions
-		trigger more frequent updates*/
+	function remCollabUpdateEntityLinks(){
+		// To remove a collab, we clear it and its array from the database. 
+		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		firebaseRef.child('entity-membership').child(_key).remove();
+	}
+
+
+
+	/***************************************************************/
+	// Chosen-selects to choose which organization or collaboration to edit/remove
 
 	function populateOrgSelect(data){
+		// data passed in is the whole Firebase object, this is necessary for the linkages after
+		//	top level selection.
 		entities = data['entity'];
 		tempString ='Select Organization ';
 		tempString += '<select class="chosen" data-placeholder="Choose an organization..." id="org">';
 
 		for (var key in entities) {
 			if (entities.hasOwnProperty(key)) {
+				// Add every organization to the select, and make the selection value the organization key
 				if (entities[key].entity_type == 'organization'){
 					tempString += '<option value="' + key + '">' + entities[key].entity_name + "</option>";
 				}
@@ -228,16 +279,27 @@ $(document).ready(function(){
 		}
 
 		tempString += '</select>';
+		// Set the inner html of #select_org div to this newly build select.
 		$('#select_org').html(tempString);
+		// Make this new select a chosen object, with static width (without static width, it breaks)
+		//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
+		//	the function.
 		$('.chosen#org').chosen({width: "95%"}).change(function(){
+			// set global key variable to be the currently chosen organization
+			//	intended so that every time a new org or collab is chosen to be actively worked on
+			//	the _key variable also updates and so accurately tracks the current working object.
 			_key = $('.chosen#org').val();
-			console.log($('.chosen#org').val());
+			// console.log($('.chosen#org').val());
+			// This does the main duty of filling the fields
+			// Value passed is an entity, type is organization
 			fillOrgFields(entities[$('.chosen#org').val()]);
+			// This fills the organization's membership in collaborations.
 			loadOrganizationMembershipSelect(data);
 		});
 	};
 
 	function populateCollabSelect(data){
+		// Code same as in above function. TODO: see how to reuse code.
 		entities = data['entity'];
 		tempString ='Select Collaboration ';
 		tempString += '<select class="chosen" data-placeholder="Choose a collaboration..." id="collab">';
@@ -253,7 +315,8 @@ $(document).ready(function(){
 		$('#select_collab').html(tempString);
 		$('.chosen#collab').chosen({width: "95%"}).change(function(){
 			_key = $('.chosen#collab').val();
-			console.log($('.chosen#collab').val());
+			// console.log($('.chosen#collab').val());
+			// Value passed is an entity, type is collaboration
 			fillCollabFields(entities[$('.chosen#collab').val()]);
 			loadCollaborationMembershipSelect(data);
 		});
@@ -296,6 +359,7 @@ $(document).ready(function(){
 			if (entities.hasOwnProperty(key)){
 				if (entities[key].entity_type == 'collaboration'){
 					if (preselectKeys && isInArray(key, preselectKeys)){
+						// Select only collaborations, and select values whose keys are in preselectKeys
 						tempString += '<option selected = "true" value="' + key + '">' + entities[key].entity_name + "</option>";
 					}
 					else{
@@ -305,18 +369,22 @@ $(document).ready(function(){
 			}
 		}
 		tempString += '</select>';
+		// Set the select div's html to be the new select box string
 		$('#select_org_members').html(tempString);
+		// Initialize chosen
 		$('.chosen#org_members').chosen();
 	};
 
 
 	function loadCollaborationMembershipSelect(data){
 		collabKey = _key;
+		entities = data['entity']
 		preselectKeys = getEntityKeysForCollab(collabKey, data['entity-membership']);
 		tempString = 'Collaboration members: ';
 		tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose an organization/collaboration..." id="collab_members">';
 		for (var key in entities){
 			if (entities.hasOwnProperty(key)){
+				// Select every entity. If preselectKeys exists and key is in preselectKeys, automatically select the entity.
 				if (preselectKeys && isInArray(key, preselectKeys)){
 					tempString += '<option selected = "true" value="' + key + '">' + entities[key].entity_name + "</option>";
 				}
@@ -326,15 +394,22 @@ $(document).ready(function(){
 			}
 		}
 		tempString += '</select>';
+		// Set the select div's html to be the new select box string
 		$('#select_collab_members').html(tempString);
+		// Initialize chosen
 		$('.chosen#collab_members').chosen();
+		// What does this line do? I should'a commented this last night
 		$('.chosen#collab_members').prop('disabled', false);
 	};
 
+	// Given an organization key and the membership table, return an array of collaboration keys
+	//	of which the organization is part.
 	function getCollabKeysForOrg(orgKey, membership_table){
 		collabKeys = [];
 		for (var key in membership_table){
 			if (membership_table.hasOwnProperty(key)) {
+				// if the org is in the current array for the membership table,
+				//	add the membership table array's key to the list of valid collab keys
 				if (isInArray(orgKey, membership_table[key])){
 					collabKeys.push(key);
 				}
@@ -343,68 +418,70 @@ $(document).ready(function(){
 		return collabKeys;
 	};
 
+	// Given a collaboration key and the membership table, return an array of entity keys
+	//	that are part of the collaboration.
 	function getEntityKeysForCollab(collabKey, membership_table){
 		for (var key in membership_table){
 			if (membership_table.hasOwnProperty(key)) {
 				if (key == collabKey){
+					// return the current array of members
 					return membership_table[key];
 				};
 			}
 		};
 	};
 
+
+
+
+
+	/*************************************************************************************/
+	/*Utilities and frequently used*/
+
+	//Remove text from all input fields.
+	function clearFields(){
+		// Empty fields
+		$('input:text').val('');
+		// Clear checkboxes
+		$('input:checkbox').prop('checked', false);
+		// Clear name
+		$('#org_name, #collab_name').html('');
+	};
+
+	//Hide all fields
+	function hideFields(){
+		$('#org_fields, #collab_fields').hide();
+		$('#select_org, #select_collab').hide();
+	};
+
+	function resetForm(){
+		clearFields();
+		hideFields();
+	}
+
 	// Utility function, check if value in array, return boolean
 	function isInArray(value, array) {
   		return array.indexOf(value) > -1;
 	};
 
-	function editOrgUpdateEntityLinks(){
-		memberOf = $('.chosen#org_members').val();
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
-		firebaseRef.child('entity-membership').once("value", function(snapshot){
-			data = snapshot.val();
-			for (var i = 0; i < memberOf.length; i++) {
-				if (data.hasOwnProperty(memberOf[i]) && !isInArray(_key, data[memberOf[i]])){
-					data[memberOf[i]].push(_key);
-				}
-			}
-			firebaseRef.child('entity-membership').update(data);
-		});
-	}
+	//Thanks to StackExchange user Samuel Meddows
+	function currentDate(){
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth()+1; //January is 0!
+		var yyyy = today.getFullYear();
 
-	function editCollabUpdateEntityLinks(){
-		members = $('.chosen#collab_members');
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
-		firebaseRef.child('entity_membership').child(_key).update(members);
-	}
+		if(dd<10) {
+		    dd = '0'+dd
+		};
 
-	function remOrgUpdateEntityLinks(){
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
-		firebaseRef.child('entity-membership').once("value", function(snapshot){
-			data = snapshot.val();
-			for (var key in data){
-				if (data.hasOwnProperty(key) && isInArray(_key, data[key])){
-					var index = data[key].indexOf(_key);
-					if (index > -1) {
-						data[key].splice(index, 1);
-					}
-				}
-			}
-			firebaseRef.child('entity-membership').update(data);
-		});
-	}
+		if(mm<10) {
+		    mm = '0'+mm
+		};
 
-	function remCollabUpdateEntityLinks(){
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
-		firebaseRef.child('entity-membership').child(_key).remove();
-	}
-
-
-
-
-
-
-
+		today = mm + '/' + dd + '/' + yyyy;
+		return today;
+	};
 
 
 
@@ -415,8 +492,11 @@ $(document).ready(function(){
 	// This can be sped up if need be by listening only to updates to
 	//	mainFirebase.child('entity'), and separating entity-membership behavior.
 	function initializeFirebase(mainFirebase){
+		// See if this is necessary
 		var entities = {};
+		// On function runs every time data is updated
 		mainFirebase.on("value", function(snapshot){
+			// When data is loaded, create the Org and Collab select tools.
 			data = snapshot.val();
 			populateOrgSelect(data);
 			populateCollabSelect(data);
@@ -425,15 +505,8 @@ $(document).ready(function(){
 
 	initializeFirebase(firebaseRef);
 
-
-	$('select').chosen();
-
-	$("#testing").click(function(){
-		clearFields();
-	});
-
-	//For some reason, having a single ID for org and collab submitButton and cancelButton does not work
-	//TODO: Identify if the problem is with jQuery matching or something else.
+	// For some reason, having a single ID for org and collab submitButton and cancelButton does not work
+	// TODO: Identify if the problem is with jQuery matching or something else.
 	$("#org_submitButton").click(function(){
 		submitClick();
 	});
@@ -450,8 +523,8 @@ $(document).ready(function(){
 		resetForm();
 	});
 
-	//For each button, set the mode appropriately. 
-	//TODO: Use item IDs to centralize these 6 into one function.
+	// For each button, set the mode appropriately. 
+	// TODO: Use item IDs to centralize these 6 into one function.
 	$("#add_org").click(function(){
 		if(mode != 'add_org'){
 			mode = 'add_org';
