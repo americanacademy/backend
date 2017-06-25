@@ -75,7 +75,7 @@ $(document).ready(function(){
 	//	'editing_type' chosen from {'add', 'edit', 'remove'}, since functions like this 
 	//	have such parallel structure.
 	function submitClick(){
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		var firebaseRef = new Firebase("https://atlas-769c1.firebaseio.com/");
 		switch (mode){
 			case "add_org":
 			// Push new organization directly to database
@@ -213,7 +213,7 @@ $(document).ready(function(){
 		// Gets the currently selected collaborations for the organization as an array of keys.
 		memberOf = $('.chosen#org_members').val();
 		if (memberOf){
-			var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+			var firebaseRef = new Firebase("https://atlas-769c1.firebaseio.com/");
 			// firebaseRef.once() will only trigger and perform the internal operations once.
 			firebaseRef.child('entity-membership').once("value", function(snapshot){
 				// data is the entity membership table as a JSON object
@@ -242,14 +242,14 @@ $(document).ready(function(){
 		if (!members){
 			members = [];
 		};
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		var firebaseRef = new Firebase("https://atlas-769c1.firebaseio.com/");
 		// Update Firebase's ref for this collaboration key to be the member array.
 		firebaseRef.child('entity-membership').child(_key).set(members);
 	}
 
 	function remOrgUpdateEntityLinks(){
 		// To remove an org, we just remove its key from everywhere.
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		var firebaseRef = new Firebase("https://atlas-769c1.firebaseio.com/");
 		firebaseRef.child('entity-membership').once("value", function(snapshot){
 			data = snapshot.val();
 			for (var key in data){
@@ -268,7 +268,7 @@ $(document).ready(function(){
 
 	function remCollabUpdateEntityLinks(){
 		// To remove a collab, we clear it and its array from the database. 
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+		var firebaseRef = new Firebase("https://atlas-769c1.firebaseio.com/");
 		firebaseRef.child('entity-membership').child(_key).remove();
 	}
 
@@ -502,7 +502,7 @@ $(document).ready(function(){
 
 
 	//INITIALIZE FIREBASE
-	var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+	var firebaseRef = new Firebase("https://atlas-769c1.firebaseio.com/");
 
 	// This can be sped up if need be by listening only to updates to
 	//	mainFirebase.child('entity'), and separating entity-membership behavior.
@@ -538,6 +538,10 @@ $(document).ready(function(){
 		resetForm();
 	});
 
+	// Delete temp text on first button click (necessarily mode selection)
+	$('button').click(function(){
+		$('#temp').remove();
+	})
 	// For each button, set the mode appropriately. 
 	// TODO: Use item IDs to centralize these 6 into one function.
 	$("#add_org").click(function(){
