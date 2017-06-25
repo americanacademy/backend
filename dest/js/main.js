@@ -14,6 +14,7 @@ $(document).ready(function(){
 		$('#org_fields').show();
 		$('#org_name').html('Add Organization');
 		$('#collab_name').html('');
+		$('#select_org_members, #select_collab_members').hide();
 		$('#org_fields input').prop('disabled', false);
 	};
 
@@ -23,6 +24,7 @@ $(document).ready(function(){
 		$('#collab_name').html('');
 		$('#select_org').show();
 		$('#select_collab').hide();
+		$('#select_org_members, #select_collab_members').show();
 		$('#org_fields input').prop('disabled', false);
 	};
 
@@ -32,6 +34,7 @@ $(document).ready(function(){
 		$('#collab_name').html('');
 		$('#select_org').show();
 		$('#select_collab').hide();
+		$('#select_org_members, #select_collab_members').show();
 		$('#org_fields input').prop('disabled', true);
 	};
 
@@ -40,6 +43,7 @@ $(document).ready(function(){
 		$('#collab_fields').show();
 		$('#collab_name').html('Add Collaboration');
 		$('#org_name').html('');
+		$('#select_org_members, #select_collab_members').hide();
 		$('#collab_fields input').prop('disabled', false);
 	};
 
@@ -49,6 +53,7 @@ $(document).ready(function(){
 		$('#org_name').html('');
 		$('#select_collab').show()
 		$('#select_org').hide();
+		$('#select_org_members, #select_collab_members').show();
 		$('#collab_fields input').prop('disabled', false);
 	};
 
@@ -58,6 +63,7 @@ $(document).ready(function(){
 		$('#org_name').html('');
 		$('#select_collab').show();
 		$('#select_org').hide();
+		$('#select_org_members, #select_collab_members').show();
 		$('#collab_fields input').prop('disabled', true);
 	};
 
@@ -117,6 +123,7 @@ $(document).ready(function(){
 		// Once the submit button has been clicked, clear the form and reset Firebase
 		resetForm();
 		initializeFirebase(firebaseRef);
+		mode = ''
 	};
 
 	/*********************************************************/
@@ -205,31 +212,39 @@ $(document).ready(function(){
 	function editOrgUpdateEntityLinks(){
 		// Gets the currently selected collaborations for the organization as an array of keys.
 		memberOf = $('.chosen#org_members').val();
-
-		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
-		// firebaseRef.once() will only trigger and perform the internal operations once.
-		firebaseRef.child('entity-membership').once("value", function(snapshot){
-			// data is the entity membership table as a JSON object
-			data = snapshot.val();
-			// For every key that the organization should be associated with
-			for (var i = 0; i < memberOf.length; i++) {
-				// If that key is in the entity membership table and the organization is 
-				//	NOT already associated with that key, then add the org-key to the main table.
-				if (data.hasOwnProperty(memberOf[i]) && !isInArray(_key, data[memberOf[i]])){
-					data[memberOf[i]].push(_key);
+		if (memberOf){
+			var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
+			// firebaseRef.once() will only trigger and perform the internal operations once.
+			firebaseRef.child('entity-membership').once("value", function(snapshot){
+				// data is the entity membership table as a JSON object
+				data = snapshot.val();
+				// For every key that the organization should be associated with
+				for (var i = 0; i < memberOf.length; i++) {
+					// If that key is in the entity membership table and the organization is 
+					//	NOT already associated with that key, then add the org-key to the main table.
+					if (data.hasOwnProperty(memberOf[i]) && !isInArray(_key, data[memberOf[i]])){
+						data[memberOf[i]].push(_key);
+					}
 				}
-			}
-			// Update with new data.
-			firebaseRef.child('entity-membership').update(data);
-		});
+				// Update with new data.
+				firebaseRef.child('entity-membership').update(data);
+			});
+		}
+		else{
+			// If the org is not a member anywhere, just remove it from everything.
+			remOrgUpdateEntityLinks();
+		}
 	}
 
 	function editCollabUpdateEntityLinks(){
 		// Gets the current members for this organization as an array
-		members = $('.chosen#collab_members');
+		members = $('.chosen#collab_members').val();
+		if (!members){
+			members = [];
+		};
 		var firebaseRef = new Firebase("https://test-for-atlas.firebaseio.com/");
 		// Update Firebase's ref for this collaboration key to be the member array.
-		firebaseRef.child('entity_membership').child(_key).update(members);
+		firebaseRef.child('entity-membership').child(_key).set(members);
 	}
 
 	function remOrgUpdateEntityLinks(){
