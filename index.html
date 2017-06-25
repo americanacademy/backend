@@ -2,8 +2,7 @@
 <link rel="stylesheet" type="text/css" href="dest/css/main.css">
 
 <div id="select">
-
-    <button id="testing">TESTING</button>
+    <!--Mode selection buttons-->
     <button id="add_org">Add an Organization</button>
     <button id="edit_org">Edit an Organization</button>
     <button id="rem_org">Remove an Organization</button>
@@ -14,11 +13,14 @@
 </div>
 <div id="fields">
 <!--Styling for JS-->
+    <!--Name for organization field editing header-->
     <div id="org_name">  </div>
+    <!--Multiple Select for Organizations-->
     <div id="select_org"> 
-        Select Organization or
+        Select Organization
         
     </div>
+    <!--Main text entry for organizations-->
     <div style="display:none" id="org_fields">
         Name: <input type="text" id = "entity_name"><br>
         About: <input type="text" id = "about"><br>
@@ -46,7 +48,7 @@
         <button id="org_cancelButton">CANCEL</button>
 
     </div>
-
+    <!--Structure is parallel to above-->
     <div id="collab_name">  </div>
     <div id="select_collab"> 
         Select Collaboration
@@ -83,14 +85,12 @@
 </div>
 
 
-
+<!-- See if this script is needed and delete if possible -->
 <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
 
 <!-- Replace this script with the correct Firebase initialization header-->
 <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
-
+<!-- See if we can use JQuery locally instead of getting it from the internet -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="dest/js/chosen.jquery.js"></script>
 <script src="dest/js/main.js"></script>
-
-]
