@@ -5,11 +5,12 @@
     <!--Mode selection buttons-->
     <button id="add_org">Add an Organization</button>
     <button id="edit_org">Edit an Organization</button>
-    <button id="rem_org">Remove an Organization</button>
+    <button id="rem_org">Remove an Organization</button> <br>
     <button id="add_collab">Add a Collaboration</button>
     <button id="edit_collab">Edit a Collaboration</button>
-    <button id="rem_collab">Remove a Collaboration</button>
-
+    <button id="rem_collab">Remove a Collaboration</button> <br>
+    <button id="add_pub">Add a Publication</button>
+    <button id="rem_pub">Remove a Publication</button>
 </div>
 
 <div id = "temp">Please select editing mode first.
@@ -39,7 +40,6 @@
         Category: <input type="text" id = "entity_category"><br>
         Category Info: <input type="text" id = "entity_category_info"><br>
         Facebook: <input type="text" id = "facebook"><br>
-        Has records?: <input type="checkbox" id = "has_linked_records"> Check for yes<br>
         Twitter: <input type="text" id = "twitter"><br>
         Linked in Company page: <input type="text" id = "linkedin_company_page"><br>
         Linked in groups: <input type="text" id = "linkedin_groups"><br>
@@ -48,7 +48,7 @@
         Fortune Status: <input type="text" id = "fortune_status"><br>
         Geolocation: <input type="text" id = "geolocation"><br>
         Washington DC Office: <input type="text" id = "washington_dc_office"><br>
-        <div id="select_org_members"></div>
+        <div id="select_org_members"></div> <br>
         <button id="org_submitButton">SUBMIT</button> 
         <button id="org_cancelButton">CANCEL</button>
 
@@ -71,7 +71,6 @@
         Category: <input type="text" id = "entity_category"><br>
         Category Info: <input type="text" id = "entity_category_info"><br>
         Facebook: <input type="text" id = "facebook"><br>
-        Has records?: <input type="checkbox" id = "has_linked_records"> Check for yes<br>
         Twitter: <input type="text" id = "twitter"><br>
         Linked in Company page: <input type="text" id = "linkedin_company_page"><br>
         Linked in groups: <input type="text" id = "linkedin_groups"><br>
@@ -81,13 +80,38 @@
         Membership verified by: <input type="text" id = "collaboration_participation_membership_verified_by"><br>
         Founding Year: <input type="text" id = "founding_year_for_collaborations_only"><br>
         Address DC Office: <input type="text" id = "washington_dc_office"><br>
-        Has Resources: <input type="checkbox" id = "has_resources"> Check for yes<br>
-        <div id="select_collab_members"></div>
+        <div id="select_collab_members"></div> <br>
         <button id="collab_submitButton">SUBMIT</button> 
         <button id="collab_cancelButton">CANCEL</button>
 
     </div>
+    <div id="pub_name">  </div>
+    <div id="select_pub"> 
+        Select Publication
+    </div>
+    <div style="display:none" id="pub_fields">
+        <div id="publication_name">The file name of the document will be the displayed name<br></div>
+        Category: <input type="text" id = "category"><br>
+        Upload Date: <input type="text" id = "upload_date"><br>
+        Topic: <input type="text" id = "topic"><br>
+        <div id="publication_details">
+            <div id="select_entity_uploader"></div>
+            Upload Publication: <input type="file" id="publication_file"><br><br>
+        </div>
+        <button id="pub_submitButton">SUBMIT</button>
+        <button id="pub_cancelButton">CANCEL</button>
+
+    </div>
+
+
+
+
+
+
 </div>
+
+
+
 
 
 <!-- See if this script is needed and delete if possible -->
@@ -95,6 +119,22 @@
 
 <!-- Replace this script with the correct Firebase initialization header-->
 <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+
+<!-- This links to the wrong Firebase, fix when pushing to production-->
+<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBVhJLbMBcjwpGSkTShS0WbZ0qvDH1TXDY",
+    authDomain: "test-for-atlas.firebaseapp.com",
+    databaseURL: "https://test-for-atlas.firebaseio.com",
+    projectId: "test-for-atlas",
+    storageBucket: "test-for-atlas.appspot.com",
+    messagingSenderId: "933551328538"
+  };
+  firebase.initializeApp(config);
+</script>
+
 <!-- See if we can use JQuery locally instead of getting it from the internet -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script src="dest/js/chosen.jquery.js"></script>
