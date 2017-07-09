@@ -3,6 +3,8 @@
 
 mode = '';
 _key = '';
+var selectedFile;
+var _filename;
 
 // Begin adding listeners once the document is finished loading
 $(document).ready(function(){
@@ -13,28 +15,23 @@ $(document).ready(function(){
 		resetForm();
 		$('#org_fields').show();
 		$('#org_name').html('Add Organization');
-		$('#collab_name').html('');
-		$('#select_org_members, #select_collab_members').hide();
+		hideFormSelect();
 		$('#org_fields input').prop('disabled', false);
 	};
 
 	function editOrgMode(){
 		resetForm();
 		$('#org_name').html('Edit Organization');
-		$('#collab_name').html('');
 		$('#select_org').show();
-		$('#select_collab').hide();
-		$('#select_org_members, #select_collab_members').show();
+		showFormSelect();
 		$('#org_fields input').prop('disabled', false);
 	};
 
 	function remOrgMode(){
 		resetForm();
 		$('#org_name').html('Remove Organization');
-		$('#collab_name').html('');
 		$('#select_org').show();
-		$('#select_collab').hide();
-		$('#select_org_members, #select_collab_members').show();
+		showFormSelect();
 		$('#org_fields input').prop('disabled', true);
 	};
 
@@ -42,30 +39,46 @@ $(document).ready(function(){
 		resetForm();	
 		$('#collab_fields').show();
 		$('#collab_name').html('Add Collaboration');
-		$('#org_name').html('');
-		$('#select_org_members, #select_collab_members').hide();
+		hideFormSelect();
 		$('#collab_fields input').prop('disabled', false);
 	};
 
 	function editCollabMode(){
 		resetForm();
 		$('#collab_name').html('Edit Collaboration');
-		$('#org_name').html('');
 		$('#select_collab').show()
-		$('#select_org').hide();
-		$('#select_org_members, #select_collab_members').show();
+		showFormSelect();
 		$('#collab_fields input').prop('disabled', false);
 	};
 
 	function remCollabMode(){
 		resetForm();
 		$('#collab_name').html('Remove Collaboration');
-		$('#org_name').html('');
 		$('#select_collab').show();
-		$('#select_org').hide();
-		$('#select_org_members, #select_collab_members').show();
+		showFormSelect();
 		$('#collab_fields input').prop('disabled', true);
 	};
+
+	function addPubMode(){
+		resetForm();
+		$('#pub_fields').show();
+		$('#pub_name').html('Add Publication');
+		hideFormSelect();
+		$('#select_entity_uploader').show();
+		$('#publication_name').show();
+		$('#publication_details').show();
+		$('#pub_fields input').prop('disabled', false);
+	}
+
+	function remPubMode(){
+		resetForm();
+		$('#pub_name').html('Remove Publication');
+		$('#select_pub').show();
+		showFormSelect();
+		$('#publication_name').hide();
+		$('#publication_details').hide();
+		$('#pub_fields input').prop('disabled', true);
+	}
 
 	/************************************************************************/
 
@@ -114,6 +127,64 @@ $(document).ready(function(){
 					remCollabUpdateEntityLinks();
 				}
 				break;
+			case "add_pub":
+				// Code here is taken from firebase documentation at:
+				// https://firebase.google.com/docs/storage/web/upload-files
+				if (!selectedFile){
+					window.alert("You must select a file to upload!");
+				}
+				else{
+					var newPub = createPublicationObject();
+					var storageRef = firebase.storage().ref(newPub.name);
+					var uploadTask = storageRef.put(selectedFile);
+					// Register three observers:
+					// 1. 'state_changed' observer, called any time the state changes
+					// 2. Error observer, called on failure
+					// 3. Completion observer, called on successful completion
+					uploadTask.on('state_changed', function(snapshot){
+					  // Observe state change events such as progress, pause, and resume
+					  // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+					  var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+					  //console.log('Upload is ' + progress + '% done');
+					  switch (snapshot.state) {
+					    case firebase.storage.TaskState.PAUSED: // or 'paused'
+					      //console.log('Upload is paused');
+					      break;
+					    case firebase.storage.TaskState.RUNNING: // or 'running'
+					      //console.log('Upload is running');
+					      break;
+					  }
+					}, function(error) {
+					  // Handle unsuccessful uploads
+					  console.log(error);
+					  window.alert("Upload has failed, please try again later!")
+					}, function() {
+					  // Handle successful uploads on complete
+					  // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+					  var downloadURL = uploadTask.snapshot.downloadURL;
+					  //console.log("Upload Successful!");
+					  newPub.downloadURL = downloadURL;
+					  firebaseRef.child('publication').push(newPub);
+
+					});
+				};
+				break;
+			case "rem_pub":
+				if (!_filename){
+						window.alert("Please select a file!");
+				}
+				else if (confirm("Do you really want to delete this publication?")){
+					firebaseRef.child('publication').child(_key).remove();
+					storageRef = firebase.storage().ref(_filename);
+					storageRef.delete().then(function(){
+						// Handle successful deletion
+						//console.log("File delected.");
+					}).catch(function(error){
+						window.alert("Error deleting file, please try again later!");
+						console.log(error);
+					});
+				};
+				break;
 			default: 
 				// This happens if the user tries to select and change an entity
 				// 	without selecting a mode first.
@@ -149,8 +220,6 @@ $(document).ready(function(){
 			fortune_status										: $('#org_fields #fortune_status').val(),
 			founding_year_for_collaborations_only				: "",
 			geolocation											: $('#org_fields #geolocation').val(),
-			has_linked_records									: $('#org_fields #has_linked_records').is(":checked"),
-			has_resources										: false,
 			linkedin_company_page								: $('#org_fields #linkedin_company_page').val(),
 			linkedin_groups										: $('#org_fields #linkedin_groups').val(),
 			organization_links									: "",
@@ -185,8 +254,6 @@ $(document).ready(function(){
 			fortune_status										: "",
 			founding_year_for_collaborations_only				: $('#collab_fields #founding_year_for_collaborations_only').val(),
 			geolocation											: "",
-			has_linked_records									: $('#collab_fields #has_linked_records').is(":checked"),
-			has_resources										: $('#collab_fields #has_resources').is(":checked"),
 			linkedin_company_page								: $('#collab_fields #linkedin_company_page').val(),
 			linkedin_groups										: $('#collab_fields #linkedin_groups').val(),
 			organization_links									: "",
@@ -202,6 +269,18 @@ $(document).ready(function(){
 			zip													: $('#collab_fields #zip').val(),
 		};
 		return newCollab;
+	};
+
+	function createPublicationObject(){
+		var newPub = {
+			category 		: $('#pub_fields #category').val(),
+			downloadURL 	: '',
+			entity_uploader : $('.chosen#entity_uploader').val(),
+			name 			: selectedFile.name,
+			topic			: $('#pub_fields #topic').val(),
+			upload_date		: $('#pub_fields #upload_date').val(),
+		};
+		return newPub;
 	};
 	
 	/* These functions have a live Firebase within them to make changes.
@@ -314,7 +393,7 @@ $(document).ready(function(){
 	};
 
 	function populateCollabSelect(data){
-		// Code same as in above function. TODO: see how to reuse code.
+		// Code same as in above function. TODO: reuse code from above function in some manner.
 		entities = data['entity'];
 		tempString ='Select Collaboration ';
 		tempString += '<select class="chosen" data-placeholder="Choose a collaboration..." id="collab">';
@@ -337,14 +416,32 @@ $(document).ready(function(){
 		});
 	};
 
+	// Same style of population as above.
+	function populatePubSelect(data){
+		publications = data['publication'];
+		tempString = 'Select Publication ';
+		tempString += '<select class="chosen"  data-placeholder="Choose a publication..." id="pub">';
+		for (var key in publications) {
+			if (publications.hasOwnProperty(key)){
+				tempString += '<option value="' + key + '">' + publications[key].name + "</option>";
+			}
+		};
+		tempString += '</select>';
+		$('#select_pub').html(tempString);
+		// Bind functions to changing the selected publication
+		// _filename is both the name in storage of the file, as well as the 'name' field.
+		$('.chosen#pub').chosen({width: "95%"}).change(function(){
+			_key = $('.chosen#pub').val();
+			_filename = publications[_key].name;
+			fillPubFields(publications[$('.chosen#pub').val()]);
+		});
+	};
+
 	function fillOrgFields(organization){
 		//For every text field, get the text field ID, find the organization value that matches
-		// 	to that key, and set that value to the text field input. Then do checkboxes.
+		// 	to that key, and set that value to the text field input.
 		$('#org_fields input:text').each(function(){
 			$(this).val(organization[$(this).attr('id')]);
-		});
-		$('#org_fields input:checkbox').each(function(){
-			$(this).prop('checked', organization[$(this).attr('id')]);
 		});
 		$('#org_fields').show();
 	};
@@ -354,10 +451,14 @@ $(document).ready(function(){
 		$('#collab_fields input:text').each(function(){
 			$(this).val(collaboration[$(this).attr('id')]);
 		});
-		$('#collab_fields input:checkbox').each(function(){
-			$(this).prop('checked', collaboration[$(this).attr('id')]);
-		});
 		$('#collab_fields').show();
+	};
+
+	function fillPubFields(publication){
+		$('#pub_fields input:text').each(function(){
+			$(this).val(publication[$(this).attr('id')]);
+		});
+		$('#pub_fields').show();
 	};
 
 	//ENTITY MEMBERSHIP AND LINKAGE FUNCTIONS
@@ -393,7 +494,7 @@ $(document).ready(function(){
 
 	function loadCollaborationMembershipSelect(data){
 		collabKey = _key;
-		entities = data['entity']
+		entities = data['entity'];
 		preselectKeys = getEntityKeysForCollab(collabKey, data['entity-membership']);
 		tempString = 'Collaboration members: ';
 		tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose an organization/collaboration..." id="collab_members">';
@@ -416,6 +517,24 @@ $(document).ready(function(){
 		// What does this line do? I should'a commented this last night
 		$('.chosen#collab_members').prop('disabled', false);
 	};
+
+	function loadEntityUploaderSelect(data){
+		entities = data['entity'];
+		tempString = 'Organization/Collaboration uploader: ';
+		// Single select for entity
+		tempString += '<select class="chosen" data-placeholder="Choose an organization/collaboration..." id = "entity_uploader">';
+		// Add every entity
+		for (var key in entities){
+			if (entities.hasOwnProperty(key)){
+				tempString += '<option value="' + key + '">' + entities[key].entity_name + "</option>";
+			}
+		};
+		tempString += '</select>';
+		//
+		$('#select_entity_uploader').html(tempString);
+		//Initialize Chosen, set width to constant (the width becomes very small otherwise)
+		$('.chosen#entity_uploader').chosen({width: "40%"});
+	}
 
 	// Given an organization key and the membership table, return an array of collaboration keys
 	//	of which the organization is part.
@@ -457,21 +576,34 @@ $(document).ready(function(){
 	function clearFields(){
 		// Empty fields
 		$('input:text').val('');
-		// Clear checkboxes
-		$('input:checkbox').prop('checked', false);
 		// Clear name
-		$('#org_name, #collab_name').html('');
+		$('#org_name, #collab_name, #pub_name').html('');
 	};
 
 	//Hide all fields
 	function hideFields(){
-		$('#org_fields, #collab_fields').hide();
-		$('#select_org, #select_collab').hide();
+		$('#org_fields, #collab_fields, #pub_fields').hide();
+		$('#select_org, #select_collab, #select_pub').hide();
 	};
+
+
+	// Chosen selects behave weirdly, these functions helps handle some of that.
+	function hideFormSelect(){
+		$('#select_org_members, #select_collab_members, #select_entity_uploader').hide();
+	}
+
+	function showFormSelect(){
+		$('#select_org_members, #select_collab_members, #select_entity_uploader').show();
+	}
+
+	function hideMainSelect(){
+		$('#select_org, #select_collab, #select_pub').hide();
+	}
 
 	function resetForm(){
 		clearFields();
 		hideFields();
+		hideMainSelect();
 	}
 
 	// Utility function, check if value in array, return boolean
@@ -515,6 +647,8 @@ $(document).ready(function(){
 			data = snapshot.val();
 			populateOrgSelect(data);
 			populateCollabSelect(data);
+			populatePubSelect(data);
+			loadEntityUploaderSelect(data);
 		});
 	};
 
@@ -538,12 +672,29 @@ $(document).ready(function(){
 		resetForm();
 	});
 
+	$("#pub_submitButton").click(function(){
+		submitClick();
+	});
+
+	$("#pub_cancelButton").click(function(){
+		resetForm();
+	});
+
+
 	// Delete temp text on first button click (necessarily mode selection)
 	$('button').click(function(){
 		$('#temp').remove();
-	})
+	});
+
+
+	//For publication file select, update file as needed
+	$("#publication_file").on('change', function(event){
+		selectedFile = event.target.files[0];
+	});
+
+
 	// For each button, set the mode appropriately. 
-	// TODO: Use item IDs to centralize these 6 into one function.
+	// TODO: Use item IDs to centralize these 8 into one function.
 	$("#add_org").click(function(){
 		if(mode != 'add_org'){
 			mode = 'add_org';
@@ -580,4 +731,17 @@ $(document).ready(function(){
 			remCollabMode();
 		}
 	});
+	$("#add_pub").click(function(){
+		if (mode != 'add_pub'){
+			mode = 'add_pub';
+			addPubMode();
+		}
+	});
+	$("#rem_pub").click(function(){
+		if (mode != 'rem_pub'){
+			mode = 'rem_pub';
+			remPubMode();
+		}
+	});
+
 });
