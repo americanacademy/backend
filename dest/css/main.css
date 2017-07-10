@@ -12,7 +12,7 @@ body {
 	width: 25%;
 	/*This following line allows for the panel to not interrupt the rest of the page flow*/
 	float: left;
-	height: 98%;
+	height: 120%;
 	text-align: center;
 	padding-top: 1%;
 }
