@@ -1,1 +1,46 @@
-/*lol*/
+body {
+  font: normal 18px/100% "Georgia Serif", Georgia, serif;
+  margin: 0; 
+}
+
+#temp {
+	font: normal 24px/100% "Georgia Serif", Georgia, serif;
+}
+/*The select panel on the left*/
+#select {
+	background-color: rgba(31, 45, 96, 1);
+	width: 25%;
+	/*This following line allows for the panel to not interrupt the rest of the page flow*/
+	float: left;
+	height: 98%;
+	text-align: center;
+	padding-top: 1%;
+}
+#select button{
+	width: 85%;
+	height: 50px;
+	font-size: 0.8em;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/*TODO: Remove line breaks from the HTML file */
+#select br{
+	display:none;
+}
+/*TODO: Edit HTML document to have separate label and input field divisions
+		Then style the divisions appropriately
+		Have textboxes be, instead of 'input:text', 'textarea' style inputs*/
+#fields{
+	padding-top: 1%;
+	padding-left: 26%;
+}
+
+#fields input{
+	margin-left: 10px;
+}
+
+#org_name, #collab_name, #pub_name{
+	font: normal 24px/100% "Georgia Serif", Georgia, serif;	
+}
