@@ -213,7 +213,6 @@ $(document).ready(function(){
 			collaboration_participation_membership_verified_by 	: "",
 			contact 											: $('#org_fields #contact').val(),
 			entity_category 									: $('#org_fields #entity_category').val(),
-			entity_category_info 								: $('#org_fields #entity_category_info').val(),
 			entity_name											: $('#org_fields #entity_name').val(),
 			entity_type											: "organization",
 			facebook											: $('#org_fields #facebook').val(),
@@ -222,8 +221,6 @@ $(document).ready(function(){
 			geolocation											: $('#org_fields #geolocation').val(),
 			linkedin_company_page								: $('#org_fields #linkedin_company_page').val(),
 			linkedin_groups										: $('#org_fields #linkedin_groups').val(),
-			organization_links									: "",
-			participation_membership_in_collaboration			: "",
 			primary_focus										: $('#org_fields #primary_focus').val(),
 			state												: $('#org_fields #state').val(),
 			status												: $('#org_fields #status').val(),
@@ -247,7 +244,6 @@ $(document).ready(function(){
 			collaboration_participation_membership_verified_by 	: $('#collab_fields #collaboration_participation_membership_verified_by').val(),
 			contact 											: $('#collab_fields #contact').val(),
 			entity_category 									: $('#collab_fields #entity_category').val(),
-			entity_category_info 								: $('#collab_fields #entity_category_info').val(),
 			entity_name											: $('#collab_fields #entity_name').val(),
 			entity_type											: "collaboration",
 			facebook											: $('#collab_fields #facebook').val(),
@@ -256,8 +252,6 @@ $(document).ready(function(){
 			geolocation											: "",
 			linkedin_company_page								: $('#collab_fields #linkedin_company_page').val(),
 			linkedin_groups										: $('#collab_fields #linkedin_groups').val(),
-			organization_links									: "",
-			participation_membership_in_collaboration			: "",
 			primary_focus										: $('#collab_fields #primary_focus').val(),
 			state												: $('#collab_fields #state').val(),
 			status												: $('#collab_fields #status').val(),
@@ -378,7 +372,7 @@ $(document).ready(function(){
 		// Make this new select a chosen object, with static width (without static width, it breaks)
 		//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
 		//	the function.
-		$('.chosen#org').chosen({width: "95%"}).change(function(){
+		$('.chosen#org').chosen({width: "90%"}).change(function(){
 			// set global key variable to be the currently chosen organization
 			//	intended so that every time a new org or collab is chosen to be actively worked on
 			//	the _key variable also updates and so accurately tracks the current working object.
@@ -407,7 +401,7 @@ $(document).ready(function(){
 
 		tempString += '</select>';
 		$('#select_collab').html(tempString);
-		$('.chosen#collab').chosen({width: "95%"}).change(function(){
+		$('.chosen#collab').chosen({width: "90%"}).change(function(){
 			_key = $('.chosen#collab').val();
 			// console.log($('.chosen#collab').val());
 			// Value passed is an entity, type is collaboration
@@ -430,7 +424,7 @@ $(document).ready(function(){
 		$('#select_pub').html(tempString);
 		// Bind functions to changing the selected publication
 		// _filename is both the name in storage of the file, as well as the 'name' field.
-		$('.chosen#pub').chosen({width: "95%"}).change(function(){
+		$('.chosen#pub').chosen({width: "90%"}).change(function(){
 			_key = $('.chosen#pub').val();
 			_filename = publications[_key].name;
 			fillPubFields(publications[$('.chosen#pub').val()]);
@@ -488,7 +482,7 @@ $(document).ready(function(){
 		// Set the select div's html to be the new select box string
 		$('#select_org_members').html(tempString);
 		// Initialize chosen
-		$('.chosen#org_members').chosen();
+		$('.chosen#org_members').chosen({width: "80%"});
 	};
 
 
@@ -513,7 +507,7 @@ $(document).ready(function(){
 		// Set the select div's html to be the new select box string
 		$('#select_collab_members').html(tempString);
 		// Initialize chosen
-		$('.chosen#collab_members').chosen();
+		$('.chosen#collab_members').chosen({width: "80%"});
 		// What does this line do? I should'a commented this last night
 		$('.chosen#collab_members').prop('disabled', false);
 	};
