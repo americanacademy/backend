@@ -1,0 +1,44 @@
+This file is intended to support the back-end manager.
+
+The goals of this document are to clearly state the intentions with which the application was built, to detail next steps for this application, and to justify why it was built in the current way (in typical programming fashion, by explaining why everything else didn't work).
+
+First, of note, the application was built largely in a single week. Many decisions in the app's coding were made in the interest of time rather than any real limitation in code. Current missing features such as editing publications, or selecting membership/members when creating organizations or collaborations were both byproducts of time limitations. Other aspects, such as the lack of a real aesthetic, or the small text fields for what should be large areas (such as the about section), were simply because of the functionality-first approach. While project timelines may make these visual features a far-off completion, their absence doesn't indicate any lack of functionality in the codebase.
+
+With that said, the project grew mostly organically from bare basics without too much planning. This has led to a lack of structure in the codebase that makes the code rather difficult to read, and does not particularly follow best practices. (example, entire codebase surrounded in $(document).ready(...) )
+
+The goals of this application was to replace the old back-end manager which was linked to the old format of the Firebase database. The old manager is located at atlas-new-format.firebaseapp.com. This page is still active and allows for changes to be made to the old Firebase database, which is not linked to the live website and will not be used in the future. The old application had very limited uses. It was difficult to modify already entered organizations and collaborations. Adding new fields at will led to immense database bloat. It was incredibly painful to add links between organizations and collaborations, and links had to be added both ways to be faithful. 
+
+The new application intended to fix these issues by offering a flexible way to add, edit, and remove each type of record stored in the database, including flexibly updating linkages between organizations and collaborations, which is one of the big goals of this project. The project was developed natively in HTML/JavaScript, instead of in Polymer as in the previous application. Polymer is intended to be a tool to work with Firebase, but it did not work effectively and Google dropped support for it in the end. Firebase's interfacing with JavaScript is more than adequate for our purposes. 
+
+Much like the main atlas tables, the data is acquired all at first and worked with locally. Unlike the main table, we listen for updates to the database and update the data live, so that multiple collaborators can update the database simultaneously (two collaborators trying to edit the same record will not see each other's changes and changes will be saved chronologically). In edit and remove modes, data from the selected node will be written onto the form. The data from the text fields in add and edit mode is pushed to the server. 
+
+There were two main issues faced in building the application. First was assuring the behavior of chosen-selects. Chosen-selects are a type of select box as shown here: https://harvesthq.github.io/chosen/ . They allow for easy selection from a dropdown with a large amount of choices, as used in the filters for the main atlas tables. With the large amount of organizations and collaborations, making chosen-selects were essential for ease-of-use of the app. Populating these selects from the database offered a fair bit of trouble.
+
+While the behavior of chosen-selects is well documented on their website and on other places besides, their syling was the largest issue. In particular, ther was trouble having their style be "display:none" (that is, invisible), and still having the select populate correctly. The resolution was an inadequate one: to make the main selects visible from the start. This feature will need to be fixed in the future. 
+
+The second issue was updating Firebase correctly. While the new structure of the database aided greatly here, there was still a fair bit of trouble dealing with syntax and listeners, which added complexity to the process.
+
+The biggest obstacle in working with Firebase was dealing with recieving data from the server correctly. Very frequently, you need the data at some point in a function and you want to request Firebase for that data. This does not work. When you request data from Firebase, you must instead request a "on" or "once" action from Firebase (where "on" will update continously as data changes, while "once" only gets the data once). These are not functions to get the data, they are promises. In order:
+	1. Promise (firebase "on" function) is called
+	2. Promise is made
+	3. Code after promise is run...
+	4. Later, promise is fulfilled and data is delivered
+
+What this means in terms of development is that you cannot get exactly the data you need when you need it. Instead, you need to create the promise ahead of when you need the data. There were two main approaches to this as used in the project. 
+
+In one case, we accepted the data within the promise when it was fulfilled, and then used the data as an argument to functions that used the data.
+
+In the other case, the data, once recieved from the promise, was stored in a global variable and used from the variable from then on.
+
+The advantage of the first is that it activates immediately from when the promise is fulfilled and won't ever accidentally run without any data loaded. The advantage of the second is that it doesn't need to be scoped within a promise, as it can be called from anywhere in the global system. Both have their merits and it is up to the use-case to determine which should be used. In particular, the global variables in this system indicate where the second approach was used.  
+
+The important update for this project is implementing database security. The format for this will be simple. Make the page invisible until the user is authenticated, and verify that the authentication token is in the list of verified users. Only then display the page to the user. The ability to edit the database should come from the user's authentication token, not from the page itself not showing, but nonetheless it is advantageous to keep the page invisible from authenticated but disallowed users. 
+
+In terms of next steps for this project, there are a couple things to do:
+	* Reformat the codebase to better follow best practices
+	* Add in key features to make up for previous time constraints
+	* Update visuals, for functionality as well as aesthetic
+	* Support upcoming security functionality
+	* Implement proper code management via gruntfiles for linting, minization, etc.
+
+Of course, this is in addition to requested features and discovered bugs.
