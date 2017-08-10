@@ -225,7 +225,7 @@ $(document).ready(function(){
 			geolocation											: $('#org_fields #geolocation').val(),
 			linkedin_company_page								: $('#org_fields #linkedin_company_page').val(),
 			linkedin_groups										: $('#org_fields #linkedin_groups').val(),
-			primary_focus										: $('#org_fields #primary_focus').val(),
+			primary_focus										: $('.chosen#org_primary_focus').val(),
 			state												: $('#org_fields #state').val(),
 			status												: $('#org_fields #status').val(),
 			twitter												: $('#org_fields #twitter').val(),
@@ -256,7 +256,7 @@ $(document).ready(function(){
 			geolocation											: "",
 			linkedin_company_page								: $('#collab_fields #linkedin_company_page').val(),
 			linkedin_groups										: $('#collab_fields #linkedin_groups').val(),
-			primary_focus										: $('#collab_fields #primary_focus').val(),
+			primary_focus										: $('.chosen#collab_primary_focus').val(),
 			state												: $('#collab_fields #state').val(),
 			status												: $('#collab_fields #status').val(),
 			twitter												: $('#collab_fields #twitter').val(),
@@ -539,25 +539,75 @@ $(document).ready(function(){
 		//	top level selection.
 		entities = data['entity'];
 		tempString ='Category: ';
-		tempString += '<select class="chosen" data-placeholder="Choose a category..." id="entity_category">';
+		if (type == 'organization'){
+			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="org_entity_category">';
+		} else {
+			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="collab_entity_category">';				
+		}
+		var categories = [];
 
 		for (var key in entities) {
 			if (entities.hasOwnProperty(key)) {
 				// Add every organization to the select, and make the selection value the organization key
-				if (entities[key].entity_type == type){
+				if (entities[key].entity_type == type && !categories.includes(entities[key].entity_category)){
 					tempString += '<option value="' + key + '">' + entities[key].entity_category + "</option>";
+					categories.push(entities[key].entity_category);
 				}
 			}
 		}
 
 		tempString += '</select>';
 
-		// Set the inner html of #select_org div to this newly build select.
-		$('#select_entity_category').html(tempString);			
-		// Make this new select a chosen object, with static width (without static width, it breaks)
-		//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
-		//	the function.
-		$('.chosen#entity_category').chosen({width: "90%"});
+		if (type == 'organization') {
+			// Set the inner html of #select_org div to this newly build select.
+			$('#select_org_entity_category').html(tempString);			
+			// Make this new select a chosen object, with static width (without static width, it breaks)
+			//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
+			//	the function.
+			$('.chosen#org_entity_category').chosen({width: "90%"});			
+		} else {
+			$('#select_collab_entity_category').html(tempString);			
+			$('.chosen#collab_entity_category').chosen({width: "90%"});						
+		}
+
+	}
+
+	function loadPrimaryFocusSelect(data, type){
+		// data passed in is the whole Firebase object, this is necessary for the linkages after
+		//	top level selection.
+		entities = data['entity'];
+		tempString ='Primary Focus: ';
+		if (type == 'organization'){
+			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="org_primary_focus">';
+		} else {
+			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="collab_primary_focus">';				
+		}
+		var focuses = [];
+
+		for (var key in entities) {
+			if (entities.hasOwnProperty(key)) {
+				// Add every organization to the select, and make the selection value the organization key
+				if (entities[key].entity_type == type && !focuses.includes(entities[key].primary_focus)){
+					tempString += '<option value="' + key + '">' + entities[key].primary_focus + "</option>";
+					categories.push(entities[key].primary_focus);
+				}
+			}
+		}
+
+		tempString += '</select>';
+
+		if (type == 'organization') {
+			// Set the inner html of #select_org div to this newly build select.
+			$('#select_org_primary_focus').html(tempString);			
+			// Make this new select a chosen object, with static width (without static width, it breaks)
+			//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
+			//	the function.
+			$('.chosen#org_primary_focus').chosen({width: "90%"});			
+		} else {
+			$('#select_collab_primary_focus').html(tempString);			
+			$('.chosen#collab_primary_focus').chosen({width: "90%"});						
+		}
+
 	}
 
 	// Given an organization key and the membership table, return an array of collaboration keys
@@ -613,11 +663,11 @@ $(document).ready(function(){
 
 	// Chosen selects behave weirdly, these functions helps handle some of that.
 	function hideFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_entity_category').hide();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus').hide();
 	}
 
 	function showFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_entity_category').show();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus').show();
 	}
 
 	function hideMainSelect(){
@@ -675,6 +725,8 @@ $(document).ready(function(){
 			loadEntityUploaderSelect(data);
 			loadEntityCategorySelect(data, 'organization');
 			loadEntityCategorySelect(data, 'collaboration');
+			loadPrimaryFocusSelect(data, 'organization');
+			loadPrimaryFocusSelect(data, 'collaboration');
 		});
 	};
 
