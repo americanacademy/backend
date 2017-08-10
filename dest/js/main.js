@@ -589,7 +589,7 @@ $(document).ready(function(){
 				// Add every organization to the select, and make the selection value the organization key
 				if (entities[key].entity_type == type && !focuses.includes(entities[key].primary_focus)){
 					tempString += '<option value="' + key + '">' + entities[key].primary_focus + "</option>";
-					categories.push(entities[key].primary_focus);
+					focuses.push(entities[key].primary_focus);
 				}
 			}
 		}
