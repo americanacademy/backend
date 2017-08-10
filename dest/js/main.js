@@ -212,7 +212,7 @@ $(document).ready(function(){
 			city 												: $('#org_fields #city').val(),
 			collaboration_participation_membership_verified_by 	: "",
 			contact 											: $('#org_fields #contact').val(),
-			entity_category 									: $('#org_fields #entity_category').val(),
+			entity_category 									: $('.chosen#org_entity_category').val(),
 			entity_name											: $('#org_fields #entity_name').val(),
 			entity_type											: "organization",
 			facebook											: $('#org_fields #facebook').val(),
@@ -243,7 +243,7 @@ $(document).ready(function(){
 			city 												: $('#collab_fields #city').val(),
 			collaboration_participation_membership_verified_by 	: $('#collab_fields #collaboration_participation_membership_verified_by').val(),
 			contact 											: $('#collab_fields #contact').val(),
-			entity_category 									: $('#collab_fields #entity_category').val(),
+			entity_category 									: $('.chosen#collab_entity_category').val(),
 			entity_name											: $('#collab_fields #entity_name').val(),
 			entity_type											: "collaboration",
 			facebook											: $('#collab_fields #facebook').val(),
@@ -530,6 +530,37 @@ $(document).ready(function(){
 		$('.chosen#entity_uploader').chosen({width: "40%"});
 	}
 
+	function loadEntityCategorySelect(data, type){
+		// data passed in is the whole Firebase object, this is necessary for the linkages after
+		//	top level selection.
+		entities = data['entity'];
+		tempString ='Category: ';
+		tempString += '<select class="chosen" data-placeholder="Choose a category..." id="entity_category">';
+
+		for (var key in entities) {
+			if (entities.hasOwnProperty(key)) {
+				// Add every organization to the select, and make the selection value the organization key
+				if (entities[key].entity_type == type){
+					tempString += '<option value="' + key + '">' + entities[key].entity_category + "</option>";
+				}
+			}
+		}
+
+		tempString += '</select>';
+
+		if (type == 'organization'){
+			// Set the inner html of #select_org div to this newly build select.
+			$('#select_org_entity_category').html(tempString);			
+			// Make this new select a chosen object, with static width (without static width, it breaks)
+			//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
+			//	the function.
+			$('.chosen#org_entity_category').chosen({width: "90%"});
+		} else {
+			$('#select_collab_entity_category').html(tempString);			
+			$('.chosen#collab_entity_category').chosen({width: "90%"});			
+		}
+	}
+
 	// Given an organization key and the membership table, return an array of collaboration keys
 	//	of which the organization is part.
 	function getCollabKeysForOrg(orgKey, membership_table){
@@ -643,6 +674,8 @@ $(document).ready(function(){
 			populateCollabSelect(data);
 			populatePubSelect(data);
 			loadEntityUploaderSelect(data);
+			loadEntityCategorySelect(data, 'organization');
+			loadEntityCategorySelect(data, 'collaboration');
 		});
 	};
 
