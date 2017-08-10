@@ -15,6 +15,7 @@ $(document).ready(function(){
 		resetForm();
 		$('#org_fields').show();
 		$('#org_name').html('Add Organization');
+		$('#select_org_entity_category').show();
 		hideFormSelect();
 		$('#org_fields input').prop('disabled', false);
 	};
@@ -23,6 +24,7 @@ $(document).ready(function(){
 		resetForm();
 		$('#org_name').html('Edit Organization');
 		$('#select_org').show();
+		$('#select_org_entity_category').show();
 		showFormSelect();
 		$('#org_fields input').prop('disabled', false);
 	};
@@ -39,6 +41,7 @@ $(document).ready(function(){
 		resetForm();	
 		$('#collab_fields').show();
 		$('#collab_name').html('Add Collaboration');
+		$('#select_collab_entity_category').show();
 		hideFormSelect();
 		$('#collab_fields input').prop('disabled', false);
 	};
@@ -47,6 +50,7 @@ $(document).ready(function(){
 		resetForm();
 		$('#collab_name').html('Edit Collaboration');
 		$('#select_collab').show()
+		$('#select_collab_entity_category').show();
 		showFormSelect();
 		$('#collab_fields input').prop('disabled', false);
 	};
@@ -614,11 +618,11 @@ $(document).ready(function(){
 
 	// Chosen selects behave weirdly, these functions helps handle some of that.
 	function hideFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader').hide();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category').hide();
 	}
 
 	function showFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader').show();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category').show();
 	}
 
 	function hideMainSelect(){
