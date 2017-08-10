@@ -15,7 +15,7 @@ $(document).ready(function(){
 		resetForm();
 		$('#org_fields').show();
 		$('#org_name').html('Add Organization');
-		$('#select_org_entity_category').show();
+		$('#select_entity_category').show();
 		hideFormSelect();
 		$('#org_fields input').prop('disabled', false);
 	};
@@ -24,7 +24,7 @@ $(document).ready(function(){
 		resetForm();
 		$('#org_name').html('Edit Organization');
 		$('#select_org').show();
-		$('#select_org_entity_category').show();
+		$('#select_entity_category').show();
 		showFormSelect();
 		$('#org_fields input').prop('disabled', false);
 	};
@@ -41,7 +41,7 @@ $(document).ready(function(){
 		resetForm();	
 		$('#collab_fields').show();
 		$('#collab_name').html('Add Collaboration');
-		$('#select_collab_entity_category').show();
+		$('#select_entity_category').show();
 		hideFormSelect();
 		$('#collab_fields input').prop('disabled', false);
 	};
@@ -50,7 +50,7 @@ $(document).ready(function(){
 		resetForm();
 		$('#collab_name').html('Edit Collaboration');
 		$('#select_collab').show()
-		$('#select_collab_entity_category').show();
+		$('#select_entity_category').show();
 		showFormSelect();
 		$('#collab_fields input').prop('disabled', false);
 	};
@@ -552,17 +552,12 @@ $(document).ready(function(){
 
 		tempString += '</select>';
 
-		if (type == 'organization'){
-			// Set the inner html of #select_org div to this newly build select.
-			$('#select_org_entity_category').html(tempString);			
-			// Make this new select a chosen object, with static width (without static width, it breaks)
-			//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
-			//	the function.
-			$('.chosen#org_entity_category').chosen({width: "90%"});
-		} else {
-			$('#select_collab_entity_category').html(tempString);			
-			$('.chosen#collab_entity_category').chosen({width: "90%"});			
-		}
+		// Set the inner html of #select_org div to this newly build select.
+		$('#select_entity_category').html(tempString);			
+		// Make this new select a chosen object, with static width (without static width, it breaks)
+		//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
+		//	the function.
+		$('.chosen#entity_category').chosen({width: "90%"});
 	}
 
 	// Given an organization key and the membership table, return an array of collaboration keys
@@ -618,11 +613,11 @@ $(document).ready(function(){
 
 	// Chosen selects behave weirdly, these functions helps handle some of that.
 	function hideFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category').hide();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_entity_category').hide();
 	}
 
 	function showFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category').show();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_entity_category').show();
 	}
 
 	function hideMainSelect(){
