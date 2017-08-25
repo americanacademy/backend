@@ -550,7 +550,7 @@ $(document).ready(function(){
 			if (entities.hasOwnProperty(key)) {
 				// Add every organization to the select, and make the selection value the organization key
 				if (entities[key].entity_type == type && !categories.includes(entities[key].entity_category)){
-					tempString += '<option value="' + key + '">' + entities[key].entity_category + "</option>";
+					tempString += '<option>' + entities[key].entity_category + "</option>";
 					categories.push(entities[key].entity_category);
 				}
 			}
@@ -579,18 +579,23 @@ $(document).ready(function(){
 		tempString ='Primary Focus: ';
 		if (type == 'organization'){
 			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="org_primary_focus">';
-		} else {
-			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="collab_primary_focus">';				
-		}
-		var focuses = [];
+			var focuses = [];
 
-		for (var key in entities) {
-			if (entities.hasOwnProperty(key)) {
-				// Add every organization to the select, and make the selection value the organization key
-				if (entities[key].entity_type == type && !focuses.includes(entities[key].primary_focus)){
-					tempString += '<option value="' + key + '">' + entities[key].primary_focus + "</option>";
-					focuses.push(entities[key].primary_focus);
+			for (var key in entities) {
+				if (entities.hasOwnProperty(key)) {
+					// Add every organization to the select, and make the selection value the organization key
+					if (entities[key].entity_type == type && !focuses.includes(entities[key].primary_focus)){
+						tempString += '<option>' + entities[key].primary_focus + "</option>";
+						focuses.push(entities[key].primary_focus);
+					}
 				}
+			}
+
+		} else {
+			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="collab_primary_focus">';
+			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
+			for (var i in focuses) {
+				tempString += '<option>' + focuses[i] + '</option>';
 			}
 		}
 
