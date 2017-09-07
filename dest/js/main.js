@@ -546,7 +546,7 @@ $(document).ready(function(){
 
 	function loadEntityUploaderSelect(data){
 		entities = data['entity'];
-		tempString = 'Organization/Collaboration uploader: ';
+		tempString = 'Source: ';
 		// Single select for entity
 		tempString += '<select class="chosen" data-placeholder="Choose an organization/collaboration..." id = "entity_uploader">';
 		// Add every entity
