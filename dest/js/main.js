@@ -183,7 +183,8 @@ $(document).ready(function(){
 				};
 				break;
 			case "edit_pub":
-				var downloadURL = $('#pub_fields #downloadURL').val()
+				var downloadURL = $('#pub_fields #downloadURL').val();
+				var name = $('#pub_fields #name').val();
 				var newPub = createPublicationObject();
 				newPub.downloadURL = downloadURL;
 				firebaseRef.child('entity').child(_key).set(newPub);
@@ -290,6 +291,18 @@ $(document).ready(function(){
 			downloadURL 	: '',
 			entity_uploader : $('.chosen#entity_uploader').val(),
 			name 			: selectedFile.name,
+			topic			: $('#pub_fields #topic').val(),
+			upload_date		: $('#pub_fields #upload_date').val(),
+		};
+		return newPub;
+	};
+
+	function createPublicationObject(var name){
+		var newPub = {
+			category 		: $('#pub_fields #category').val(),
+			downloadURL 	: '',
+			entity_uploader : $('.chosen#entity_uploader').val(),
+			name 			: name,
 			topic			: $('#pub_fields #topic').val(),
 			upload_date		: $('#pub_fields #upload_date').val(),
 		};
