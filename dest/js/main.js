@@ -185,7 +185,7 @@ $(document).ready(function(){
 			case "edit_pub":
 				var downloadURL = $('#pub_fields #downloadURL').val();
 				var name = $('#pub_fields #name').val();
-				var newPub = createPublicationObject();
+				var newPub = createPublicationObject(name);
 				newPub.downloadURL = downloadURL;
 				firebaseRef.child('entity').child(_key).set(newPub);
 				break;
@@ -297,7 +297,7 @@ $(document).ready(function(){
 		return newPub;
 	};
 
-	function createPublicationObject(var name){
+	function createPublicationObject(name){
 		var newPub = {
 			category 		: $('#pub_fields #category').val(),
 			downloadURL 	: '',
