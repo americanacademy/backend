@@ -182,6 +182,12 @@ $(document).ready(function(){
 					});
 				};
 				break;
+			case "edit_pub":
+				var downloadURL = $('#pub_fields #downloadURL').val()
+				var newPub = createPublicationObject();
+				newPub.downloadURL = downloadURL;
+				firebaseRef.child('entity').child(_key).set(newPub);
+				break;
 			case "rem_pub":
 				if (!_filename){
 						window.alert("Please select a file!");
@@ -827,6 +833,12 @@ $(document).ready(function(){
 		if (mode != 'add_pub'){
 			mode = 'add_pub';
 			addPubMode();
+		}
+	});
+	$("#edit_pub").click(function(){
+		if(mode != 'edit_pub'){
+			mode = 'edit_pub';
+			editPubMode();
 		}
 	});
 	$("#rem_pub").click(function(){
