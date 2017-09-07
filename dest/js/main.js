@@ -74,6 +74,15 @@ $(document).ready(function(){
 		$('#pub_fields input').prop('disabled', false);
 	}
 
+	function editPubMode(){
+		resetForm();
+		$('#pub_name').html('Edit Publication');
+		$('#select_pub').show()
+		$('#select_entity_uploader').show();
+		showFormSelect();
+		$('#pub_fields input').prop('disabled', false);
+	};
+
 	function remPubMode(){
 		resetForm();
 		$('#pub_name').html('Remove Publication');
