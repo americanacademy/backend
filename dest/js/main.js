@@ -183,13 +183,13 @@ $(document).ready(function(){
 				};
 				break;
 			case "edit_pub":
-				firebase.database().ref('/publications/' + _key).once('value').then(function(snapshot) {
+				firebase.database().ref('/publication/' + _key).once('value').then(function(snapshot) {
 					var downloadURL = snapshot.val().downloadURL;
 					var name = snapshot.val().name;
 				});
 				var newPub = createPublicationObject(name);
 				newPub.downloadURL = downloadURL;
-				firebaseRef.child('publications').child(_key).set(newPub);
+				firebaseRef.child('publication').child(_key).set(newPub);
 				break;
 			case "rem_pub":
 				if (!_filename){
