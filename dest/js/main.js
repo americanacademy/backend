@@ -186,10 +186,10 @@ $(document).ready(function(){
 				firebase.database().ref('/publication/' + _key).once('value').then(function(snapshot) {
 					var downloadURL = snapshot.val().downloadURL;
 					var name = snapshot.val().name;
+					var newPub = createPublicationObject(name);
+					newPub.downloadURL = downloadURL;
+					firebaseRef.child('publication').child(_key).set(newPub);
 				});
-				var newPub = createPublicationObject(name);
-				newPub.downloadURL = downloadURL;
-				firebaseRef.child('publication').child(_key).set(newPub);
 				break;
 			case "rem_pub":
 				if (!_filename){
