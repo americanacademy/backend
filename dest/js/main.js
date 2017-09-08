@@ -183,7 +183,7 @@ $(document).ready(function(){
 				};
 				break;
 			case "edit_pub":
-				firebase.database().ref('/publications/' + _key + ).once('value').then(function(snapshot) {
+				firebase.database().ref('/publications/' + _key).once('value').then(function(snapshot) {
 					var downloadURL = snapshot.val().downloadURL;
 					var name = snapshot.val().name;
 				});
