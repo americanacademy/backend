@@ -186,6 +186,7 @@ $(document).ready(function(){
 				firebase.database().ref('/publications/' + _key + ).once('value').then(function(snapshot) {
 					var downloadURL = snapshot.val().downloadURL;
 					var name = snapshot.val().name;
+				});
 				var newPub = createPublicationObject(name);
 				newPub.downloadURL = downloadURL;
 				firebaseRef.child('publications').child(_key).set(newPub);
