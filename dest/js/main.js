@@ -578,11 +578,17 @@ $(document).ready(function(){
 		}
 		var categories = [];
 
+		current_category = entities[_key].entity_category;
+
 		for (var key in entities) {
 			if (entities.hasOwnProperty(key)) {
 				// Add every organization to the select, and make the selection value the organization key
 				if (entities[key].entity_type == type && !categories.includes(entities[key].entity_category)){
-					tempString += '<option>' + entities[key].entity_category + "</option>";
+					if (current_category == entities[key].entity_category) {
+						tempString += '<option selected = "true">' + entities[key].entity_category + "</option>";
+					} else {
+						tempString += '<option>' + entities[key].entity_category + "</option>";
+					}
 					categories.push(entities[key].entity_category);
 				}
 			}
@@ -627,7 +633,12 @@ $(document).ready(function(){
 			tempString += '<select class="chosen" multiple="true" data-placeholder="Choose a category..." id="collab_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
-				tempString += '<option>' + focuses[i] + '</option>';
+				current_focus = entities[_key].primary_focus;
+				if (current_focus.includes(focuses[i])) {
+					tempString += '<option selected = "true">' + focuses[i] + '</option>';
+				} else {
+					tempString += '<option>' + focuses[i] + '</option>';
+				}
 			}
 		}
 
