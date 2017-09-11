@@ -786,7 +786,6 @@ $(document).ready(function(){
 			loadPrimaryFocusSelect(data, 'organization');
 			loadPrimaryFocusSelect(data, 'collaboration');
 			loadPrimaryFocusSelect(data, 'publication');
-			loadPrimaryFocusSelect(data, 'publication');
 		});
 	};
 
