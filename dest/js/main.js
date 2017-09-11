@@ -295,7 +295,7 @@ $(document).ready(function(){
 			downloadURL 	: '',
 			entity_uploader : $('.chosen#entity_uploader').val(),
 			name 			: selectedFile.name,
-			topic			: $('#pub_fields #topic').val(),
+			primary_focus	: $('.chosen#pub_primary_focus').val(),
 			upload_date		: $('#pub_fields #upload_date').val(),
 		};
 		return newPub;
@@ -307,7 +307,7 @@ $(document).ready(function(){
 			downloadURL 	: '',
 			entity_uploader : $('.chosen#entity_uploader').val(),
 			name 			: name,
-			topic			: $('#pub_fields #topic').val(),
+			primary_focus	: $('.chosen#pub_primary_focus').val(),
 			upload_date		: $('#pub_fields #upload_date').val(),
 		};
 		return newPub;
@@ -640,9 +640,12 @@ $(document).ready(function(){
 			//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
 			//	the function.
 			$('.chosen#org_primary_focus').chosen({width: "90%"});			
-		} else {
+		} else if (type == 'collaboration') {
 			$('#select_collab_primary_focus').html(tempString);			
 			$('.chosen#collab_primary_focus').chosen({width: "90%"});						
+		} else {
+			$('#select_pub_primary_focus').html(tempString);			
+			$('.chosen#pub_primary_focus').chosen({width: "90%"});				
 		}
 
 	}
@@ -700,11 +703,11 @@ $(document).ready(function(){
 
 	// Chosen selects behave weirdly, these functions helps handle some of that.
 	function hideFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus').hide();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus', 'select_pub_primary_focus').hide();
 	}
 
 	function showFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus').show();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus', 'select_pub_primary_focus').show();
 	}
 
 	function hideMainSelect(){
@@ -764,6 +767,8 @@ $(document).ready(function(){
 			loadEntityCategorySelect(data, 'collaboration');
 			loadPrimaryFocusSelect(data, 'organization');
 			loadPrimaryFocusSelect(data, 'collaboration');
+			loadPrimaryFocusSelect(data, 'publication');
+			loadPrimaryFocusSelect(data, 'publication');
 		});
 	};
 
