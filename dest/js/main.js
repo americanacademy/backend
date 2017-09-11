@@ -553,10 +553,17 @@ $(document).ready(function(){
 		tempString = 'Source: ';
 		// Single select for entity
 		tempString += '<select class="chosen" data-placeholder="Choose an organization/collaboration..." id = "entity_uploader">';
+
+		current_entity_name = entities[_key].entity_name;
+
 		// Add every entity
 		for (var key in entities){
 			if (entities.hasOwnProperty(key)){
-				tempString += '<option value="' + key + '">' + entities[key].entity_name + "</option>";
+				if (current_entity_name == entities[key].entity_name) {
+					tempString += '<option selected="true" value="' + key + '">' + entities[key].entity_name + "</option>";
+				} else {
+					tempString += '<option value="' + key + '">' + entities[key].entity_name + "</option>";					
+				}
 			}
 		};
 		tempString += '</select>';
