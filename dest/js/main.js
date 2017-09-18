@@ -186,10 +186,8 @@ $(document).ready(function(){
 				firebase.database().ref('/publication/' + _key).once('value').then(function(snapshot) {
 					var downloadURL = snapshot.val().downloadURL;
 					var name = snapshot.val().name;
-					var upload_date = snapshot.val().upload_date;
 					var newPub = createPublicationObject(name);
 					newPub.downloadURL = downloadURL;
-					newPub.upload_date = upload_date;
 					firebaseRef.child('publication').child(_key).set(newPub);
 				});
 				break;
@@ -295,7 +293,7 @@ $(document).ready(function(){
 			downloadURL 	: '',
 			entity_uploader : $('.chosen#entity_uploader').val(),
 			name 			: selectedFile.name,
-			primary_focus	: $('.chosen#pub_primary_focus').val(),
+			topic			: $('#pub_fields #topic').val(),
 			upload_date		: $('#pub_fields #upload_date').val(),
 		};
 		return newPub;
@@ -307,7 +305,7 @@ $(document).ready(function(){
 			downloadURL 	: '',
 			entity_uploader : $('.chosen#entity_uploader').val(),
 			name 			: name,
-			primary_focus	: $('.chosen#pub_primary_focus').val(),
+			topic			: $('#pub_fields #topic').val(),
 			upload_date		: $('#pub_fields #upload_date').val(),
 		};
 		return newPub;
@@ -316,7 +314,6 @@ $(document).ready(function(){
 	/* These functions have a live Firebase within them to make changes.
 	   Editing and removing organization links is more difficult because of the structure of
 	   'entity-membership': 	collab-key => [member-key1, member-key2, member-key3]
-
 	*/
 	function editOrgUpdateEntityLinks(){
 		// Gets the currently selected collaborations for the organization as an array of keys.
@@ -553,17 +550,10 @@ $(document).ready(function(){
 		tempString = 'Source: ';
 		// Single select for entity
 		tempString += '<select class="chosen" data-placeholder="Choose an organization/collaboration..." id = "entity_uploader">';
-
-		current_entity_name = entities[_key].entity_name;
-
 		// Add every entity
 		for (var key in entities){
 			if (entities.hasOwnProperty(key)){
-				if (current_entity_name == entities[key].entity_name) {
-					tempString += '<option selected="true" value="' + key + '">' + entities[key].entity_name + "</option>";
-				} else {
-					tempString += '<option value="' + key + '">' + entities[key].entity_name + "</option>";					
-				}
+				tempString += '<option value="' + key + '">' + entities[key].entity_name + "</option>";
 			}
 		};
 		tempString += '</select>';
@@ -585,17 +575,11 @@ $(document).ready(function(){
 		}
 		var categories = [];
 
-		current_category = entities[_key].entity_category;
-
 		for (var key in entities) {
 			if (entities.hasOwnProperty(key)) {
 				// Add every organization to the select, and make the selection value the organization key
 				if (entities[key].entity_type == type && !categories.includes(entities[key].entity_category)){
-					if (current_category == entities[key].entity_category) {
-						tempString += '<option selected = "true">' + entities[key].entity_category + "</option>";
-					} else {
-						tempString += '<option>' + entities[key].entity_category + "</option>";
-					}
+					tempString += '<option>' + entities[key].entity_category + "</option>";
 					categories.push(entities[key].entity_category);
 				}
 			}
@@ -623,7 +607,6 @@ $(document).ready(function(){
 		entities = data['entity'];
 		tempString ='Primary Focus: ';
 		if (type == 'organization'){
-			// take out multiple="true" for now?
 			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="org_primary_focus">';
 			var focuses = [];
 
@@ -638,16 +621,10 @@ $(document).ready(function(){
 			}
 
 		} else {
-			// take out multiple="true" for now?
 			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="collab_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
-				current_focus = entities[_key].primary_focus;
-				if (current_focus.includes(focuses[i])) {
-					tempString += '<option selected = "true">' + focuses[i] + '</option>';
-				} else {
-					tempString += '<option>' + focuses[i] + '</option>';
-				}
+				tempString += '<option>' + focuses[i] + '</option>';
 			}
 		}
 
@@ -660,12 +637,9 @@ $(document).ready(function(){
 			//	and becomes extremely thin so you cannot see the options. When you choose an option, perform
 			//	the function.
 			$('.chosen#org_primary_focus').chosen({width: "90%"});			
-		} else if (type == 'collaboration') {
+		} else {
 			$('#select_collab_primary_focus').html(tempString);			
 			$('.chosen#collab_primary_focus').chosen({width: "90%"});						
-		} else {
-			$('#select_pub_primary_focus').html(tempString);			
-			$('.chosen#pub_primary_focus').chosen({width: "90%"});				
 		}
 
 	}
@@ -723,11 +697,11 @@ $(document).ready(function(){
 
 	// Chosen selects behave weirdly, these functions helps handle some of that.
 	function hideFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', '#select_org_primary_focus', '#select_collab_primary_focus', '#select_pub_primary_focus').hide();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus').hide();
 	}
 
 	function showFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', '#select_org_primary_focus', '#select_collab_primary_focus', '#select_pub_primary_focus').show();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus').show();
 	}
 
 	function hideMainSelect(){
@@ -787,7 +761,6 @@ $(document).ready(function(){
 			loadEntityCategorySelect(data, 'collaboration');
 			loadPrimaryFocusSelect(data, 'organization');
 			loadPrimaryFocusSelect(data, 'collaboration');
-			loadPrimaryFocusSelect(data, 'publication');
 		});
 	};
 
