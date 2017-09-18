@@ -721,11 +721,11 @@ $(document).ready(function(){
 
 	// Chosen selects behave weirdly, these functions helps handle some of that.
 	function hideFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus', 'select_pub_primary_focus').hide();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', '#select_org_primary_focus', '#select_collab_primary_focus', '#select_pub_primary_focus').hide();
 	}
 
 	function showFormSelect(){
-		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', 'select_org_primary_focus', 'select_collab_primary_focus', 'select_pub_primary_focus').show();
+		$('#select_org_members, #select_collab_members, #select_entity_uploader', '#select_org_entity_category', '#select_collab_entity_category', '#select_org_primary_focus', '#select_collab_primary_focus', '#select_pub_primary_focus').show();
 	}
 
 	function hideMainSelect(){
