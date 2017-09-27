@@ -607,7 +607,7 @@ $(document).ready(function(){
 		entities = data['entity'];
 		tempString ='Primary Focus: ';
 		if (type == 'organization'){
-			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="org_primary_focus">';
+			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="org_primary_focus">';
 			var focuses = [];
 
 			for (var key in entities) {
@@ -621,7 +621,7 @@ $(document).ready(function(){
 			}
 
 		} else {
-			tempString += '<select class="chosen" data-placeholder="Choose a category..." id="collab_primary_focus">';
+			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="collab_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
 				tempString += '<option>' + focuses[i] + '</option>';
