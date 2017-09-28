@@ -579,11 +579,7 @@ $(document).ready(function(){
 			if (entities.hasOwnProperty(key)) {
 				// Add every organization to the select, and make the selection value the organization key
 				if (entities[key].entity_type == type && !categories.includes(entities[key].entity_category)){
-					if (entities[key].entity_category == entities[_key].entity_category) {
-						tempString += '<option selected="true">' + entities[key].entity_category + "</option>";
-					} else {
-						tempString += '<option>' + entities[key].entity_category + "</option>";
-					}
+					tempString += '<option>' + entities[key].entity_category + "</option>";
 					categories.push(entities[key].entity_category);
 				}
 			}
