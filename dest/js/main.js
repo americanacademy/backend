@@ -614,11 +614,7 @@ $(document).ready(function(){
 				if (entities.hasOwnProperty(key)) {
 					// Add every organization to the select, and make the selection value the organization key
 					if (entities[key].entity_type == type && !focuses.includes(entities[key].primary_focus)){
-						if (key == _key) {
-							tempString += '<option selected="true">' + entities[key].primary_focus + "</option>";
-						} else {
-							tempString += '<option>' + entities[key].primary_focus + "</option>";
-						}
+						tempString += '<option>' + entities[key].primary_focus + "</option>";
 						focuses.push(entities[key].primary_focus);
 					}
 				}
