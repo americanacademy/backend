@@ -614,7 +614,11 @@ $(document).ready(function(){
 				if (entities.hasOwnProperty(key)) {
 					// Add every organization to the select, and make the selection value the organization key
 					if (entities[key].entity_type == type && !focuses.includes(entities[key].primary_focus)){
-						tempString += '<option>' + entities[key].primary_focus + "</option>";
+						if (key == _key) {
+							tempString += '<option selected="true">' + entities[key].primary_focus + "</option>";
+						} else {
+							tempString += '<option>' + entities[key].primary_focus + "</option>";
+						}
 						focuses.push(entities[key].primary_focus);
 					}
 				}
@@ -624,12 +628,18 @@ $(document).ready(function(){
 			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="collab_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
+				if (focuses[i] == entities[_key].primary_focus) {
+					tempString += '<option selected="true">' + focuses[i] + '</option>';
+				}
 				tempString += '<option>' + focuses[i] + '</option>';
 			}
 		} else {
 			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="pub_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
+				if (focuses[i] == data['publication'][_key].topic) {
+					tempString += '<option selected="true">' + focuses[i] + '</option>';
+				}
 				tempString += '<option>' + focuses[i] + '</option>';
 			}
 		}
