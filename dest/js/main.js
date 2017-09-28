@@ -644,11 +644,11 @@ $(document).ready(function(){
 			//	the function.
 			$('.chosen#org_primary_focus').chosen({width: "90%"});			
 		} else if (type == 'collaboration') {
-			$('#select_pub_primary_focus').html(tempString);			
-			$('.chosen#pub_primary_focus').chosen({width: "90%"});
-		} else {
 			$('#select_collab_primary_focus').html(tempString);			
-			$('.chosen#collab_primary_focus').chosen({width: "90%"});						
+			$('.chosen#collab_primary_focus').chosen({width: "90%"});	
+		} else {
+			$('#select_pub_primary_focus').html(tempString);			
+			$('.chosen#pub_primary_focus').chosen({width: "90%"});					
 		}
 
 	}
