@@ -635,6 +635,7 @@ $(document).ready(function(){
 			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="pub_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
+				console.log(data['publication'][_key].topic);
 				if (focuses[i] == data['publication'][_key].topic) {
 					tempString += '<option selected="true">' + focuses[i] + '</option>';
 				}
