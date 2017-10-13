@@ -621,6 +621,7 @@ $(document).ready(function(){
 			}
 
 		} else if (type == 'collaboration') {
+			_key = $('.chosen#collab').val();
 			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="collab_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
@@ -630,6 +631,7 @@ $(document).ready(function(){
 				tempString += '<option>' + focuses[i] + '</option>';
 			}
 		} else {
+			_key = $('.chosen#pub').val();
 			tempString += '<select class="chosen" multiple = "true" data-placeholder="Choose a category..." id="pub_primary_focus">';
 			var focuses = ['Health/Medical Research', 'Energy', 'Environment', 'National Security', 'Federal Research Funding', 'Food/Agriculture', 'IP/Technology Transfer', 'Economic Development', 'Social Science', 'Diversity and Human Rights', 'Education', 'Immigration'];
 			for (var i in focuses) {
